@@ -134,3 +134,26 @@ console.log(newHouseBuilder
     .setFloors(2)
     .setGarage()
     .setPool());
+var Product = /** @class */ (function () {
+    function Product(name, price) {
+        this.name = name;
+        this.price = price;
+    }
+    Product.prototype.clone = function () {
+        return new Product(this.name, this.price);
+    };
+    Product.prototype.productInfo = function () {
+        console.log("\u041F\u0440\u043E\u0434\u0443\u043A\u0442 \u0441 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435\u043C ".concat(this.price, " \u0438 \u0446\u0435\u043D\u043E\u0439 ").concat(this.price));
+    };
+    return Product;
+}());
+var newProduct = new Product('Telefon', 228);
+var cloneOfAProduct = newProduct.clone();
+console.log("\u041A\u043B\u043E\u043D\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043E\u0431\u044A\u0435\u043A\u0442: ".concat(cloneOfAProduct));
+cloneOfAProduct.name = 'NOUTBUK';
+cloneOfAProduct.price = 289356289;
+console.log('Оригинал: ', newProduct, 'Копия: ', cloneOfAProduct);
+// Описание:
+// интерфейс "IProto" отпределяет метод "clone(): <T>" для копирования объекта БЕЗ РЕАЛИЗАЦИИ
+// Дженерик <T> "приходит" из интерфейса IProto<T>, который мы указываем при реализации этого интерфейса у класса "Product";
+// Вызов метода "сlone()" у СОЗДАННОГО ИНСТАНСА класса  создаёт и возвращает копию НОВОГО объекта с полями и значениями из РАНЕЕ ПЕРЕДАННЫХ ПАРАМЕТРОВ из ОРИГИНАЛЬНОГО ИНСТАНСА Класса. 
