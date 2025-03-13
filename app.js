@@ -85,10 +85,52 @@ var OldFurnitureFactory = /** @class */ (function () {
     };
     return OldFurnitureFactory;
 }());
-function clientCode(factory) {
-    var chair = factory.createChair();
-    var table = factory.createTable();
-    chair.sitOnIt();
-    table.eatOnIt();
+function selectFactory(factory) {
+    var oldFactory = factory.createChair();
+    var modernFactory = factory.createTable();
+    oldFactory.sitOnIt();
+    modernFactory.eatOnIt();
 }
-console.log(clientCode(new ModernFurnitureFactory()));
+var House = /** @class */ (function () {
+    function House(builder) {
+        var b = builder;
+        this.floors = b.floors;
+        this.garage = b.garage;
+        this.pool = b.pool;
+    }
+    House.prototype.houseParams = function () {
+        console.log("\u0414\u043E\u043C \u043F\u043E\u0441\u0442\u0440\u043E\u0435\u043D \u0441\u043E \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u043C\u0438 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u0430\u043C\u0438: \u044D\u0442\u0430\u0436\u0435\u0439: ".concat(this.floors, " | \u0433\u0430\u0440\u0430\u0436: ").concat(this.garage, " | \u0431\u0430\u0441\u0441\u0435\u0439\u043D: ").concat(this.pool));
+    };
+    return House;
+}());
+var HouseBuilder = /** @class */ (function () {
+    function HouseBuilder() {
+        this.floors = 1;
+        this.garage = false;
+        this.pool = false;
+    }
+    HouseBuilder.prototype.setFloors = function (floors) {
+        if (![1, 2, 3].includes(floors)) {
+            throw new Error('Дом должен иметь от 1 до 3-х этажей!');
+        }
+        this.floors = floors;
+        return this;
+    };
+    HouseBuilder.prototype.setGarage = function () {
+        this.garage = true;
+        return this;
+    };
+    HouseBuilder.prototype.setPool = function () {
+        this.pool = true;
+        return this;
+    };
+    HouseBuilder.prototype.buildHouse = function () {
+        return new House(this);
+    };
+    return HouseBuilder;
+}());
+var newHouseBuilder = new HouseBuilder();
+console.log(newHouseBuilder
+    .setFloors(2)
+    .setGarage()
+    .setPool());

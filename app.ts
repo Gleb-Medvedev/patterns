@@ -42,68 +42,218 @@ const newVenicle = VenicleFactory.createVenicle('SUV');
 
 // ---2) Абстрактная фабрика
 
-interface Chair {
+interface IChair {
     sitOnIt(): void;
 }
 
-interface Table {
+interface ITable {
     eatOnIt(): void;
 }
 
-class ModernChair implements Chair {
+class ModernChair implements IChair {
     sitOnIt(): void {
         console.log('Сижу на СОВРЕМЕННОМ стуле!');
     }
 }
 
-class OldChair implements Chair {
+class OldChair implements IChair {
     sitOnIt(): void {
         console.log('Сижу на СТАРИННОМ стуле!');
     }
 }
 
-class ModernTable implements Table {
+class ModernTable implements ITable {
     eatOnIt(): void {
         console.log('ЕМ за СОВРЕМЕННЫМ столом!');
     }
 }
-class OldTable implements Table {
+
+class OldTable implements ITable {
     eatOnIt(): void {
         console.log('ЕМ за СТАРИННЫМ столом!');
     }
 }
 
 interface IFurniture {
-    createChair(): Chair;
-    createTable(): Table;
+    createChair(): IChair;
+    createTable(): ITable;
 }
 
 class ModernFurnitureFactory implements IFurniture {
-   createChair(): Chair {
+   createChair(): IChair {
        return new ModernChair();
    }
 
-   createTable(): Table {
+   createTable(): ITable {
        return new ModernTable();
    }
 }
 
 class OldFurnitureFactory implements IFurniture {
-    createChair(): Chair {
+    createChair(): IChair {
         return new OldChair();
     }
 
-    createTable(): Table {
+    createTable(): ITable {
         return new OldTable();
     }
 }
 
-function clientCode(factory: IFurniture) {
-    const chair = factory.createChair();
-    const table = factory.createTable();
+function selectFactory(factory: IFurniture) {
+    const oldFactory = factory.createChair();
+    const modernFactory = factory.createTable();
 
-    chair.sitOnIt();
-    table.eatOnIt();
+    oldFactory.sitOnIt();
+    modernFactory.eatOnIt();
 }
 
-console.log(clientCode(new ModernFurnitureFactory()));
+// selectFactory(new ModernFurnitureFactory());
+// selectFactory(new OldFurnitureFactory());
+
+//Определение:
+// Интерфейсы "ITable" и "IChair" определяют свою будущую реализацию в классах и содержит общие свойства и/или методы для каждой конктерного товара (2 вида стульев и 2 столов).
+// Для каждого типа абстракции (товара) создаётся класс, который для каждого товара реализует интерфейсы IChair и ITable с собственной реализацией методов из этих интерфейсов.
+// Создаётся интерфейс для абстракной фабрики, который определяет методы для СОЗДАНИЯ СЕМЕЙСТВ каждой абстракции. (createChair() + createTable()) без их реализации;
+// На каждое СЕМЕЙСТВО абстракции (товара) создаётся АБСТРАКТНАЯ ФАБРИКА, которая реализует все соответствующие ей методы из интерфейса (OldFactory создаёт новые инстанты для OLD стула и OLD стола, ModernFactory то же самое, но для MODERN стула и MODERN Стола)
+// Функция selectFactory принимает параметром инстанс абстракной фабрики и использует её методы для создания ТОВАРОВ СООТВЕТСТВУЮЩЕГО СЕМЕЙСТВА...
+// (selectFactory(new ModernFurnitureFactory)) создаст Modern Стул и Modern стол
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//---3)Строитель (Builder)
+
+// class House {
+//     floors: number;
+//     garage: boolean;
+//     pool: boolean;
+
+//     constructor(builder: HouseBuilder) {
+//         this.floors = builder.floors;
+//         this.garage = builder.garage;
+//         this.pool = builder.pool;
+//     }
+
+//     houseParams(): void {
+//         console.log(`Дом построен со следующими параметрами: Этажи: ${this.floors}. Гараж: ${this.garage}. Бассейн: ${this.pool}`);
+//     }
+// }
+
+// class HouseBuilder {
+//     floors: number = 1;
+//     garage: boolean = false;
+//     pool: boolean = false;
+
+//     setFloors(floors: number): HouseBuilder {
+//         if ([1,2,3].includes(floors)) {
+//             this.floors = floors;
+//             return this;
+//         } else if (floors === 0) {
+//             throw new Error('ДОМ ВЫСОТОЙ НУЛЬ ЭТАЖЕЙ? ДОСТОЙНО!');
+//         } else {
+//             throw new Error('МЫ НЕ СТРОИМ ДОМА ВЫШЕ 3-Х (ТРЁХ) ЭТАЖЕЙ!');
+//         }
+//     }
+
+//     setGarage(): HouseBuilder {
+//         this.garage = true;
+//         return this;
+//     }
+
+//     setPool(): HouseBuilder {
+//         this.pool = true;
+//         return this;
+//     }
+
+//     buildHouse(): House {
+//         return new House(this);
+//     }
+// }
+
+// const buildHouse = new HouseBuilder();
+
+// console.log(buildHouse
+//     .setFloors(0)
+//     .setGarage()
+//     .setPool());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+interface IHouseBuilder {
+    setFloors(floors: number): IHouseBuilder;
+    setGarage(): IHouseBuilder;
+    setPool(): IHouseBuilder;
+    buildHouse(): House;
+}
+
+class House {
+    floors: number;
+    garage: boolean;
+    pool: boolean;
+
+    constructor(builder: IHouseBuilder) {
+        const b = builder as HouseBuilder;
+        this.floors = b.floors;
+        this.garage = b.garage;
+        this.pool = b.pool;
+    }
+
+    houseParams(): void {
+        console.log(`Дом построен со следующими параметрами: этажей: ${this.floors} | гараж: ${this.garage} | бассейн: ${this.pool}`);
+    }
+}
+
+class HouseBuilder implements IHouseBuilder {
+    floors: number = 1;
+    garage: boolean = false;
+    pool: boolean = false;
+
+    setFloors(floors: number): IHouseBuilder {
+        if (![1,2,3].includes(floors)) {
+            throw new Error('Дом должен иметь от 1 до 3-х этажей!');
+        }
+        this.floors = floors;
+        return this;
+    }
+
+    setGarage(): IHouseBuilder {
+        this.garage = true;
+        return this;
+    }
+
+    setPool(): IHouseBuilder {
+        this.pool = true;
+        return this;
+    }
+
+    buildHouse(): House {
+        return new House(this);
+    }
+}
+
+const newHouseBuilder = new HouseBuilder();
+console.log(newHouseBuilder
+                .setFloors(2)
+                .setGarage()
+                .setPool()
+);
